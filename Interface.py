@@ -16,8 +16,12 @@ class Handler:
     def on_mainWindow_quit(self, *args):
         Gtk.main_quit(*args)
         
+    def on_mainWindow_resize(self, iconview):
+        size = iconview.get_toplevel().get_size()
 
-
+        iconview.set_columns(size[0]/150)
+        print(size)
+        
 
 def main():
 
@@ -28,33 +32,23 @@ def main():
     grid = builder.get_object("grid")
     window = builder.get_object("mainWindow")
 
-
-    #pi = Pixbuf.new_from_file_at_size("/home/belette/Images/5gk6sd.jpg", 100, 100)
-    #image = Gtk.Image.new_from_pixbuf(pi)
-    #grid.pack_start(image, False, False, False)
-    grid.set_row_spacing(15)    
-    grid.set_column_spacing(15)
-
-    i=0;
-    j=0;
+    liststore = Gtk.ListStore(Pixbuf, str)
+    iconview = builder.get_object("iconview")
+    iconview.set_model(liststore)    
+    iconview.set_pixbuf_column(0)
+    iconview.set_item_orientation(Gtk.Orientation.VERTICAL)
     
     for filename in glob.glob(path.expanduser("~/Images/" + "*")):
         if path.isfile(filename):
             pi = Pixbuf.new_from_file_at_size(filename, 150, 150)
-            image = Gtk.Image.new_from_pixbuf(pi)
-            grid.attach(image, i, j, 1 ,1)
-            if (i == 2):
-                i=0
-                j+=1
-            else:
-                i+=1
-
-    #pi = Pixbuf.new_from_file_at_size("/home/belette/Images/5gk6sd.jpg", 150, 150)
-    #image = Gtk.Image.new_from_pixbuf(pi)
-    #grid.attach(image, 0, 0, 1, 1)
-
+            liststore.append([pi, filename])
+           
     
-    print(window.get_size())
+    print(iconview.get_row_spacing())
+    print(iconview.get_column_spacing())
+    print(iconview.get_item_padding())
+    print(iconview.get_item_width())
+    print(iconview.get_margin())
     window.show_all()
 
     Gtk.main()
